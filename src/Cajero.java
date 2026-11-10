@@ -35,6 +35,15 @@ public class Cajero extends javax.swing.JFrame {
        }
    }
     
+    private void mostrar() {
+    txtPantalla.setText(sesion.get("mensaje") + "\n\n> " + sesion.get("entrada"));
+}
+    
+    // Convierte un número a formato con puntos de mil: 20000.0 -> $20.000
+private String dinero(double valor) {
+    return "$" + String.format(java.util.Locale.of("es", "CO"), "%,.0f", valor);
+}
+    
     
     private void escribir(String digito) {
             if (sesion.get("operacion") == null) {
@@ -80,6 +89,295 @@ public class Cajero extends javax.swing.JFrame {
     ps.executeUpdate();
      }
     
+    private void liberarBloqueos() {
+    try (Connection con = conectar()) {
+        if (sesion.containsKey("lockCliente")) {
+            liberar(con, "clientes", sesion.get("lockCliente"));
+        }
+        if (sesion.containsKey("lockDestino")) {
+            liberar(con, "clientes", sesion.get("lockDestino"));
+        }
+        if (sesion.containsKey("lockCajero")) {
+            liberar(con, "cajeros", sesion.get("lockCajero"));
+        }
+    } catch (SQLException e) {
+        System.out.println("Error al liberar: " + e.getMessage());
+    }
+    sesion.remove("lockCliente");
+    sesion.remove("lockDestino");
+    sesion.remove("lockCajero");
+    }
+    
+    private HashMap<String, Object> buscarCliente(Connection con, long ncuenta) throws SQLException {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM clientes WHERE ncuenta = ?");
+    ps.setLong(1, ncuenta);
+    ResultSet rs = ps.executeQuery();
+    if (!rs.next()) {
+        return null;
+    }
+    HashMap<String, Object> c = new HashMap<>();
+    c.put("id", rs.getInt("id"));
+    c.put("nombre", rs.getString("nombre") + " " + rs.getString("apellido"));
+    c.put("saldo", rs.getDouble("saldo"));
+    return c;
+    }
+    
+    private HashMap<String, Object> buscarCajero(Connection con, long id) throws SQLException {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM cajeros WHERE id = ?");
+    ps.setLong(1, id);
+    ResultSet rs = ps.executeQuery();
+    if (!rs.next()) {
+        return null;
+    }
+    HashMap<String, Object> k = new HashMap<>();
+    k.put("id", rs.getInt("id"));
+    k.put("10000", rs.getInt("ndiez"));
+    k.put("20000", rs.getInt("nveinte"));
+    k.put("50000", rs.getInt("ncincuenta"));
+    k.put("100000", rs.getInt("ncien"));
+    return k;
+    }
+    
+    private HashMap<String, Integer> calcularBilletes(long monto) {
+    HashMap<String, Integer> b = new HashMap<>();
+    b.put("100000", 0);
+    b.put("50000", 0);
+    b.put("20000", 0);
+    b.put("10000", 0);
+    if (monto == 50000) {                 // regla especial: 2 de 20.000 y 1 de 10.000
+        b.put("20000", 2);
+        b.put("10000", 1);
+        return b;
+    }
+    long resto = monto;
+    if (monto >= 100000) {                // regla especial: base de 50.000 + 2x20.000 + 10.000
+        b.put("50000", 1);
+        b.put("20000", 2);
+        b.put("10000", 1);
+        resto = monto - 100000;
+    }
+    // lo que falta se completa con la menor cantidad de billetes (de mayor a menor)
+    b.put("100000", b.get("100000") + (int) (resto / 100000));
+    resto = resto % 100000;
+    b.put("50000", b.get("50000") + (int) (resto / 50000));
+    resto = resto % 50000;
+    b.put("20000", b.get("20000") + (int) (resto / 20000));
+    resto = resto % 20000;
+    b.put("10000", b.get("10000") + (int) (resto / 10000));
+    return b;
+   }
+    
+    private void aceptar() {
+    String operacion = (String) sesion.get("operacion");
+    String entrada = (String) sesion.get("entrada");
+    if (operacion == null || entrada.isEmpty()) {
+        return;
+    }
+    long numero = Long.parseLong(entrada);
+    sesion.put("entrada", "");
+    try {
+        if (operacion.equals("saldo")) {
+            pasoSaldo(numero);
+        } else if (operacion.equals("consignar")) {
+            pasoConsignar(numero);
+        } else if (operacion.equals("retirar")) {
+            pasoRetirar(numero);
+        } else if (operacion.equals("transferir")) {
+            pasoTransferir(numero);
+        }
+    } catch (Exception e) {
+        terminar("Error: " + e.getMessage());
+    }
+    mostrar();
+      }
+    
+    private void pasoSaldo(long numero) throws SQLException {
+    try (Connection con = conectar()) {
+        HashMap<String, Object> c = buscarCliente(con, numero);
+        if (c == null) {
+            terminar("Error: la cuenta no existe");
+        } else {
+            terminar("Cliente: " + c.get("nombre") + "\nSaldo: $" + c.get("saldo"));
+        }
+    }
+    }
+    
+    private void pasoConsignar(long numero) throws SQLException {
+    int paso = (int) sesion.get("paso");
+    try (Connection con = conectar()) {
+        if (paso == 1) {
+            if (buscarCliente(con, numero) == null) {
+                terminar("Error: el cliente no existe");
+                return;
+            }
+            sesion.put("cuenta", numero);
+            sesion.put("paso", 2);
+            sesion.put("mensaje", "Ingrese el valor a consignar");
+        } else {
+            if (numero <= 0) {
+                sesion.put("mensaje", "Error: el valor debe ser mayor a 0\nIngrese el valor a consignar");
+                return;
+            }
+            HashMap<String, Object> c = buscarCliente(con, (long) sesion.get("cuenta"));
+            if (!bloquear(con, "clientes", c.get("id"))) {
+                terminar("Error: el cliente está ocupado");
+                return;
+            }
+            sesion.put("lockCliente", c.get("id"));
+            PreparedStatement ps = con.prepareStatement("UPDATE clientes SET saldo = saldo + ? WHERE id = ?");
+            ps.setLong(1, numero);
+            ps.setObject(2, c.get("id"));
+            ps.executeUpdate();
+            terminar("Consignación exitosa a " + c.get("nombre") + "\nValor: $" + numero);
+        }
+    }
+    }
+    
+    private void pasoTransferir(long numero) throws SQLException {
+    int paso = (int) sesion.get("paso");
+    try (Connection con = conectar()) {
+        if (paso == 1) {
+            if (buscarCliente(con, numero) == null) {
+                terminar("Error: la cuenta de origen no existe");
+                return;
+            }
+            sesion.put("cuenta", numero);
+            sesion.put("paso", 2);
+            sesion.put("mensaje", "Ingrese la cuenta DESTINO");
+        } else if (paso == 2) {
+            if (numero == (long) sesion.get("cuenta")) {
+                terminar("Error: no puede transferir a la misma cuenta");
+                return;
+            }
+            if (buscarCliente(con, numero) == null) {
+                terminar("Error: la cuenta destino no existe");
+                return;
+            }
+            sesion.put("destino", numero);
+            sesion.put("paso", 3);
+            sesion.put("mensaje", "Ingrese el valor a transferir");
+        } else {
+            if (numero <= 0) {
+                sesion.put("mensaje", "Error: el valor debe ser mayor a 0\nIngrese el valor a transferir");
+                return;
+            }
+            HashMap<String, Object> origen = buscarCliente(con, (long) sesion.get("cuenta"));
+            HashMap<String, Object> destino = buscarCliente(con, (long) sesion.get("destino"));
+            if (!bloquear(con, "clientes", origen.get("id"))) {
+                terminar("Error: la cuenta origen está ocupada");
+                return;
+            }
+            sesion.put("lockCliente", origen.get("id"));
+            if (!bloquear(con, "clientes", destino.get("id"))) {
+                terminar("Error: la cuenta destino está ocupada");
+                return;
+            }
+            sesion.put("lockDestino", destino.get("id"));
+            if ((double) origen.get("saldo") < numero) {
+                terminar("Error: saldo insuficiente");
+                return;
+            }
+            PreparedStatement resta = con.prepareStatement("UPDATE clientes SET saldo = saldo - ? WHERE id = ?");
+            resta.setLong(1, numero);
+            resta.setObject(2, origen.get("id"));
+            resta.executeUpdate();
+            PreparedStatement suma = con.prepareStatement("UPDATE clientes SET saldo = saldo + ? WHERE id = ?");
+            suma.setLong(1, numero);
+            suma.setObject(2, destino.get("id"));
+            suma.executeUpdate();
+            terminar("Transferencia exitosa\nDe: " + origen.get("nombre") + "\nA: " + destino.get("nombre")
+                    + "\nValor: $" + numero + "\nSu nuevo saldo: $" + ((double) origen.get("saldo") - numero));
+        }
+    }
+    }
+    
+    private void pasoRetirar(long numero) throws SQLException {
+    int paso = (int) sesion.get("paso");
+    try (Connection con = conectar()) {
+        if (paso == 1) {                                   // número de cuenta
+            if (buscarCliente(con, numero) == null) {
+                terminar("Error: la cuenta no existe");
+                return;
+            }
+            sesion.put("cuenta", numero);
+            sesion.put("paso", 2);
+            sesion.put("mensaje", "Ingrese el número del cajero");
+        } else if (paso == 2) {                            // número de cajero: aquí se bloquean ambos
+            HashMap<String, Object> cliente = buscarCliente(con, (long) sesion.get("cuenta"));
+            HashMap<String, Object> cajero = buscarCajero(con, numero);
+            if (cajero == null) {
+                terminar("Error: el cajero no existe");
+                return;
+            }
+            if (!bloquear(con, "clientes", cliente.get("id"))) {
+                terminar("Error: el cliente está ocupado");
+                return;
+            }
+            sesion.put("lockCliente", cliente.get("id"));
+            if (!bloquear(con, "cajeros", cajero.get("id"))) {
+                terminar("Error: el cajero está ocupado");
+                return;
+            }
+            sesion.put("lockCajero", cajero.get("id"));
+            sesion.put("cajero", numero);
+            sesion.put("paso", 3);
+            sesion.put("mensaje", "Bienvenido(a) " + cliente.get("nombre")
+                    + "\nIngrese el valor a retirar\n(múltiplos de 10.000, mínimo 10.000, máximo 1.000.000)");
+        } else {                                           // monto
+            retirarDinero(con, numero);
+        }
+    }
+    }
+    
+    private void retirarDinero(Connection con, long monto) throws SQLException {
+    if (monto % 10000 != 0 || monto < 10000 || monto > 1000000) {
+        sesion.put("mensaje", "Error: el valor debe ser múltiplo de 10.000, mínimo 10.000 y máximo 1.000.000\nIngrese el valor de nuevo");
+        return;
+    }
+    HashMap<String, Object> cliente = buscarCliente(con, (long) sesion.get("cuenta"));
+    HashMap<String, Object> cajero = buscarCajero(con, (long) sesion.get("cajero"));
+
+    long totalCajero = 10000L * (int) cajero.get("10000") + 20000L * (int) cajero.get("20000")
+                     + 50000L * (int) cajero.get("50000") + 100000L * (int) cajero.get("100000");
+
+    if ((double) cliente.get("saldo") < monto) {
+        terminar("Error: saldo insuficiente en la cuenta");
+        return;
+    }
+    if (totalCajero < monto) {
+        terminar("Error: el cajero no tiene dinero suficiente");
+        return;
+    }
+    HashMap<String, Integer> b = calcularBilletes(monto);
+    if (b.get("10000") > (int) cajero.get("10000") || b.get("20000") > (int) cajero.get("20000")
+            || b.get("50000") > (int) cajero.get("50000") || b.get("100000") > (int) cajero.get("100000")) {
+        terminar("Error: el cajero no tiene los billetes necesarios");
+        return;
+    }
+
+    PreparedStatement ps = con.prepareStatement(
+        "UPDATE cajeros SET ndiez = ndiez - ?, nveinte = nveinte - ?, ncincuenta = ncincuenta - ?, ncien = ncien - ? WHERE id = ?");
+    ps.setInt(1, b.get("10000"));
+    ps.setInt(2, b.get("20000"));
+    ps.setInt(3, b.get("50000"));
+    ps.setInt(4, b.get("100000"));
+    ps.setObject(5, cajero.get("id"));
+    ps.executeUpdate();
+
+    PreparedStatement ps2 = con.prepareStatement("UPDATE clientes SET saldo = saldo - ? WHERE id = ?");
+    ps2.setLong(1, monto);
+    ps2.setObject(2, cliente.get("id"));
+    ps2.executeUpdate();
+
+    terminar("Retiro satisfactorio\nBilletes entregados:\n"
+        + "  $100.000 x " + b.get("100000") + "\n"
+        + "  $50.000 x " + b.get("50000") + "\n"
+        + "  $20.000 x " + b.get("20000") + "\n"
+        + "  $10.000 x " + b.get("10000") + "\n"
+        + "Saldo restante: $" + ((double) cliente.get("saldo") - monto));
+}
+    
+    
 
 
 
@@ -116,41 +414,58 @@ public class Cajero extends javax.swing.JFrame {
         jScrollPane1.setViewportView(txtPantalla);
 
         btn1.setText("1");
+        btn1.addActionListener(this::btn1ActionPerformed);
 
         btn2.setText("2");
+        btn2.addActionListener(this::btn2ActionPerformed);
 
         btn3.setText("3");
+        btn3.addActionListener(this::btn3ActionPerformed);
 
         btn4.setText("4");
+        btn4.addActionListener(this::btn4ActionPerformed);
 
         btn5.setText("5");
+        btn5.addActionListener(this::btn5ActionPerformed);
 
         btn6.setText("6");
+        btn6.addActionListener(this::btn6ActionPerformed);
 
         btn7.setText("7");
+        btn7.addActionListener(this::btn7ActionPerformed);
 
         btn8.setText("8");
+        btn8.addActionListener(this::btn8ActionPerformed);
 
         btn9.setText("9");
         btn9.addActionListener(this::btn9ActionPerformed);
 
         btnBorrar.setText("Borrar");
+        btnBorrar.addActionListener(this::btnBorrarActionPerformed);
 
         btn0.setText("0");
+        btn0.addActionListener(this::btn0ActionPerformed);
 
         btnLimpiar.setText("Limpiar");
+        btnLimpiar.addActionListener(this::btnLimpiarActionPerformed);
 
         btnAceptar.setText("Aceptar");
+        btnAceptar.addActionListener(this::btnAceptarActionPerformed);
 
         btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(this::btnCancelarActionPerformed);
 
         btnSaldo.setText("Consultar Saldo");
+        btnSaldo.addActionListener(this::btnSaldoActionPerformed);
 
         btnConsignar.setText("Consignar");
+        btnConsignar.addActionListener(this::btnConsignarActionPerformed);
 
         btnRetirar.setText("Retirar");
+        btnRetirar.addActionListener(this::btnRetirarActionPerformed);
 
         btnTransferir.setText("Transferir");
+        btnTransferir.addActionListener(this::btnTransferirActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -247,8 +562,82 @@ public class Cajero extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn9ActionPerformed
-        // TODO add your handling code here:
+        escribir("9");
     }//GEN-LAST:event_btn9ActionPerformed
+
+    private void btn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1ActionPerformed
+        escribir("1");
+    }//GEN-LAST:event_btn1ActionPerformed
+
+    private void btn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2ActionPerformed
+        escribir("2");
+    }//GEN-LAST:event_btn2ActionPerformed
+
+    private void btn3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3ActionPerformed
+      escribir("3");
+    }//GEN-LAST:event_btn3ActionPerformed
+
+    private void btn4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4ActionPerformed
+        escribir("4");
+    }//GEN-LAST:event_btn4ActionPerformed
+
+    private void btn5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5ActionPerformed
+        escribir("5");
+    }//GEN-LAST:event_btn5ActionPerformed
+
+    private void btn6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn6ActionPerformed
+       escribir("6");
+    }//GEN-LAST:event_btn6ActionPerformed
+
+    private void btn7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn7ActionPerformed
+        escribir("7");
+    }//GEN-LAST:event_btn7ActionPerformed
+
+    private void btn8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn8ActionPerformed
+        escribir("8");
+    }//GEN-LAST:event_btn8ActionPerformed
+
+    private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
+       String entrada = (String) sesion.get("entrada");
+          if (!entrada.isEmpty()) {
+    sesion.put("entrada", entrada.substring(0, entrada.length() - 1));
+    mostrar();
+          }
+    }//GEN-LAST:event_btnBorrarActionPerformed
+
+    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
+       sesion.put("entrada", "");
+        mostrar();
+    }//GEN-LAST:event_btnLimpiarActionPerformed
+
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        aceptar();
+    }//GEN-LAST:event_btnAceptarActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+       terminar("Operación cancelada");
+       mostrar();
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void btnSaldoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaldoActionPerformed
+        iniciar("saldo", "Ingrese su número de cuenta");
+    }//GEN-LAST:event_btnSaldoActionPerformed
+
+    private void btnConsignarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsignarActionPerformed
+       iniciar("consignar", "Ingrese el número de cuenta a consignar");
+    }//GEN-LAST:event_btnConsignarActionPerformed
+
+    private void btnRetirarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRetirarActionPerformed
+        iniciar("retirar", "Ingrese su número de cuenta");
+    }//GEN-LAST:event_btnRetirarActionPerformed
+
+    private void btnTransferirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTransferirActionPerformed
+       iniciar("transferir", "Ingrese su número de cuenta (origen)");
+    }//GEN-LAST:event_btnTransferirActionPerformed
+
+    private void btn0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn0ActionPerformed
+       escribir("0");
+    }//GEN-LAST:event_btn0ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -298,11 +687,7 @@ public class Cajero extends javax.swing.JFrame {
     private javax.swing.JTextArea txtPantalla;
     // End of variables declaration//GEN-END:variables
 
-    private void mostrar() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+   
 
-    private void liberarBloqueos() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+   
 }
