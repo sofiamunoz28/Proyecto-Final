@@ -36,7 +36,9 @@ public class Cajero extends javax.swing.JFrame {
    }
     
     private void mostrar() {
-    txtPantalla.setText(sesion.get("mensaje") + "\n\n> " + sesion.get("entrada"));
+    String entrada = (String) sesion.get("entrada");
+    String visible = entrada.isEmpty() ? "" : String.format(new java.util.Locale("es", "CO"), "%,d", Long.parseLong(entrada));
+    txtPantalla.setText(sesion.get("mensaje") + "\n\n> " + visible);
 }
     
     // Convierte un número a formato con puntos de mil: 20000.0 -> $20.000
@@ -197,7 +199,7 @@ private String dinero(double valor) {
         if (c == null) {
             terminar("Error: la cuenta no existe");
         } else {
-            terminar("Cliente: " + c.get("nombre") + "\nSaldo: $" + c.get("saldo"));
+            terminar("Cliente: " + c.get("nombre") + "\nSaldo: " + dinero((double) c.get("saldo")));
         }
     }
     }
@@ -228,7 +230,7 @@ private String dinero(double valor) {
             ps.setLong(1, numero);
             ps.setObject(2, c.get("id"));
             ps.executeUpdate();
-            terminar("Consignación exitosa a " + c.get("nombre") + "\nValor: $" + numero);
+            terminar("Consignación exitosa a " + c.get("nombre") + "\nValor: " + dinero(numero));
         }
     }
     }
@@ -285,8 +287,8 @@ private String dinero(double valor) {
             suma.setLong(1, numero);
             suma.setObject(2, destino.get("id"));
             suma.executeUpdate();
-            terminar("Transferencia exitosa\nDe: " + origen.get("nombre") + "\nA: " + destino.get("nombre")
-                    + "\nValor: $" + numero + "\nSu nuevo saldo: $" + ((double) origen.get("saldo") - numero));
+           terminar("Transferencia exitosa\nDe: " + origen.get("nombre") + "\nA: " + destino.get("nombre")
+        + "\nValor: " + dinero(numero) + "\nSu nuevo saldo: " + dinero((double) origen.get("saldo") - numero));
         }
     }
     }
@@ -370,11 +372,11 @@ private String dinero(double valor) {
     ps2.executeUpdate();
 
     terminar("Retiro satisfactorio\nBilletes entregados:\n"
-        + "  $100.000 x " + b.get("100000") + "\n"
-        + "  $50.000 x " + b.get("50000") + "\n"
-        + "  $20.000 x " + b.get("20000") + "\n"
-        + "  $10.000 x " + b.get("10000") + "\n"
-        + "Saldo restante: $" + ((double) cliente.get("saldo") - monto));
+    + "  $100.000 x " + b.get("100000") + "\n"
+    + "  $50.000 x " + b.get("50000") + "\n"
+    + "  $20.000 x " + b.get("20000") + "\n"
+    + "  $10.000 x " + b.get("10000") + "\n"
+    + "Saldo restante: " + dinero((double) cliente.get("saldo") - monto));
 }
     
     

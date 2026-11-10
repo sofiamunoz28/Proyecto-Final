@@ -34,6 +34,10 @@ public class Administracion extends javax.swing.JFrame {
                   return ps.executeUpdate() == 1;
            }
            
+           private String dinero(double valor) {
+          return "$" + String.format(new java.util.Locale("es", "CO"), "%,.0f", valor);
+        }
+           
            private void liberar(Connection con, String tabla, int id) throws SQLException {
                    PreparedStatement ps = con.prepareStatement("UPDATE " + tabla + " SET estado = 0 WHERE id = ?");
                    ps.setInt(1, id);
@@ -56,7 +60,7 @@ public class Administracion extends javax.swing.JFrame {
                while (rs.next()) {
                     texto += "ID: " + rs.getInt("id") + " | " + rs.getString("nombre") + " " + rs.getString("apellido")
                        + " | Tel: " + rs.getString("telefono") + " | Ciudad: " + rs.getString("ciudad")
-                       + " | Cuenta: " + rs.getInt("ncuenta") + " | Saldo: " + rs.getDouble("saldo")
+                       + " | Cuenta: " + rs.getInt("ncuenta") + " | Saldo: " + dinero(rs.getDouble("saldo"))
                        + " | Estado: " + rs.getInt("estado") + "\n";
                 }
                  if (texto.isEmpty()) {
@@ -489,7 +493,7 @@ public class Administracion extends javax.swing.JFrame {
         try (Connection con = conectar()) {
     ResultSet rs = con.createStatement().executeQuery("SELECT COUNT(*) AS total, AVG(saldo) AS promedio FROM clientes");
     rs.next();
-    txtSalida.setText("Número de clientes: " + rs.getInt("total") + "\nDinero promedio: " + rs.getDouble("promedio"));
+    txtSalida.setText("Número de clientes: " + rs.getInt("total") + "\nDinero promedio: " + dinero(rs.getDouble("promedio")));
 } catch (Exception e) {
     txtSalida.setText("Error: " + e.getMessage());
 }
