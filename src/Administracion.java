@@ -209,20 +209,27 @@ public class Administracion extends javax.swing.JFrame {
         txtId.addActionListener(this::txtIdActionPerformed);
 
         btnListar.setText("Listar");
+        btnListar.addActionListener(this::btnListarActionPerformed);
 
         btnAgregar.setText("Agregar");
+        btnAgregar.addActionListener(this::btnAgregarActionPerformed);
 
         btnEditar.setText("Editar");
+        btnEditar.addActionListener(this::btnEditarActionPerformed);
 
         btnEliminar.setText("Eliminar");
 
         btnBuscarNombre.setText("Buscar Nombre");
+        btnBuscarNombre.addActionListener(this::btnBuscarNombreActionPerformed);
 
         btnBuscarId.setText("Buscar Id");
+        btnBuscarId.addActionListener(this::btnBuscarIdActionPerformed);
 
         btnCosignar.setText("Consignar");
+        btnCosignar.addActionListener(this::btnCosignarActionPerformed);
 
         btnRetirar.setText("Retirar");
+        btnRetirar.addActionListener(this::btnRetirarActionPerformed);
 
         jLabel10.setText("CAJEROS:");
 
@@ -237,16 +244,22 @@ public class Administracion extends javax.swing.JFrame {
         jLabel15.setText("$ 100.000 :");
 
         btnListarCajeros.setText("Listar");
+        btnListarCajeros.addActionListener(this::btnListarCajerosActionPerformed);
 
         btnAgregarCajero.setText("Agregar");
+        btnAgregarCajero.addActionListener(this::btnAgregarCajeroActionPerformed);
 
         btnEditarCajero.setText("Editar");
+        btnEditarCajero.addActionListener(this::btnEditarCajeroActionPerformed);
 
         btnEliminarCajero.setText("Eliminar");
+        btnEliminarCajero.addActionListener(this::btnEliminarCajeroActionPerformed);
 
         btnAgregarBilletes.setText("Agregar Billetes ");
+        btnAgregarBilletes.addActionListener(this::btnAgregarBilletesActionPerformed);
 
         btnQuitarBilletes.setText("Quitar Billetes");
+        btnQuitarBilletes.addActionListener(this::btnQuitarBilletesActionPerformed);
 
         jLabel16.setText("RESUMEN:");
 
@@ -332,39 +345,41 @@ public class Administracion extends javax.swing.JFrame {
                                 .addGap(11, 11, 11)
                                 .addComponent(btnAgregarBilletes, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(70, 70, 70)
-                                .addComponent(jLabel10))
-                            .addGroup(layout.createSequentialGroup()
                                 .addGap(42, 42, 42)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(btnResumen)
                                     .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnEditarCajero)
-                                .addGap(43, 43, 43)
-                                .addComponent(btnEliminarCajero))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(btnListarCajeros)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
-                                    .addComponent(btnAgregarCajero))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabel11)
-                                        .addComponent(jLabel13)
-                                        .addComponent(jLabel14)
-                                        .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, 62, Short.MAX_VALUE))
-                                    .addGap(18, 18, 18)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(txtCajId)
-                                        .addComponent(txtDiez)
-                                        .addComponent(txtVeinte)
-                                        .addComponent(txtCincuenta)
-                                        .addComponent(txtCien, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)))))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(54, 54, 54))
+                                .addGap(57, 57, 57)
+                                .addComponent(jLabel10))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnEditarCajero)
+                                        .addGap(43, 43, 43)
+                                        .addComponent(btnEliminarCajero))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(btnListarCajeros)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                                            .addComponent(btnAgregarCajero))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jLabel11)
+                                                .addComponent(jLabel13)
+                                                .addComponent(jLabel14)
+                                                .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, 62, Short.MAX_VALUE))
+                                            .addGap(18, 18, 18)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                .addComponent(txtCajId)
+                                                .addComponent(txtDiez)
+                                                .addComponent(txtVeinte)
+                                                .addComponent(txtCincuenta)
+                                                .addComponent(txtCien, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)))))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(35, 35, 35))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -375,95 +390,92 @@ public class Administracion extends javax.swing.JFrame {
                     .addComponent(jLabel10))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(89, 89, 89)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(99, 99, 99)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(243, 243, 243)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(btnListarCajeros)
                                     .addComponent(btnAgregarCajero))
                                 .addGap(21, 21, 21)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(btnEditarCajero)
-                                    .addComponent(btnEliminarCajero))
-                                .addGap(19, 19, 19)
-                                .addComponent(btnAgregarBilletes)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnQuitarBilletes)
-                                .addGap(40, 40, 40)
-                                .addComponent(jLabel16))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabel8))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(30, 30, 30)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(jLabel2)
-                                            .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel11)
-                                            .addComponent(txtCajId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(jLabel3)
-                                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel12)
-                                            .addComponent(txtDiez, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(jLabel4)
-                                            .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel13)
-                                            .addComponent(txtVeinte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(21, 21, 21)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(jLabel5)
-                                            .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel14)
-                                            .addComponent(txtCincuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(jLabel6)
-                                            .addComponent(txtCiudad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel15)
-                                            .addComponent(txtCien, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(jLabel7)
-                                            .addComponent(txtCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
-                                        .addComponent(txtSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel9)
-                                    .addComponent(txtMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(33, 33, 33)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(btnListar)
-                                    .addComponent(btnAgregar))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(btnEditar)
-                                    .addComponent(btnEliminar))
-                                .addGap(18, 18, 18)))
+                                    .addComponent(btnEliminarCajero)))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(19, 19, 19)
+                        .addComponent(btnAgregarBilletes)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnQuitarBilletes)
+                        .addGap(40, 40, 40)
+                        .addComponent(jLabel16))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(19, 19, 19)
-                                .addComponent(btnResumen)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel8))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(30, 30, 30)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(btnBuscarNombre)
-                                    .addComponent(btnBuscarId))
+                                    .addComponent(jLabel2)
+                                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel11)
+                                    .addComponent(txtCajId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(btnRetirar)
-                                    .addComponent(btnCosignar))
-                                .addGap(27, 27, 27))))))
+                                    .addComponent(jLabel3)
+                                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel12)
+                                    .addComponent(txtDiez, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel4)
+                                    .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel13)
+                                    .addComponent(txtVeinte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(21, 21, 21)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel5)
+                                    .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel14)
+                                    .addComponent(txtCincuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel6)
+                                    .addComponent(txtCiudad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel15)
+                                    .addComponent(txtCien, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel7)
+                                    .addComponent(txtCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                                .addComponent(txtSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel9)
+                            .addComponent(txtMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(33, 33, 33)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnListar)
+                            .addComponent(btnAgregar))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnEditar)
+                            .addComponent(btnEliminar))
+                        .addGap(18, 18, 18)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(19, 19, 19)
+                        .addComponent(btnResumen)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnBuscarNombre)
+                            .addComponent(btnBuscarId))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnRetirar)
+                            .addComponent(btnCosignar))
+                        .addGap(27, 27, 27))))
         );
 
         pack();
@@ -474,8 +486,161 @@ public class Administracion extends javax.swing.JFrame {
     }//GEN-LAST:event_txtIdActionPerformed
 
     private void btnResumenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResumenActionPerformed
-        // TODO add your handling code here:
+        try (Connection con = conectar()) {
+    ResultSet rs = con.createStatement().executeQuery("SELECT COUNT(*) AS total, AVG(saldo) AS promedio FROM clientes");
+    rs.next();
+    txtSalida.setText("Número de clientes: " + rs.getInt("total") + "\nDinero promedio: " + rs.getDouble("promedio"));
+} catch (Exception e) {
+    txtSalida.setText("Error: " + e.getMessage());
+}
     }//GEN-LAST:event_btnResumenActionPerformed
+
+    private void btnListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarActionPerformed
+       try (Connection con = conectar()) {
+    mostrarClientes(con.prepareStatement("SELECT * FROM clientes"));
+     } catch (Exception e) {
+    txtSalida.setText("Error: " + e.getMessage());
+      }
+    }//GEN-LAST:event_btnListarActionPerformed
+
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+        try (Connection con = conectar()) {
+    HashMap<String, Object> c = leerCliente();
+    PreparedStatement existe = con.prepareStatement("SELECT id FROM clientes WHERE ncuenta = ?");
+    existe.setLong(1, (long) c.get("ncuenta"));
+    if (existe.executeQuery().next()) {
+        txtSalida.setText("Ya existe un cliente con ese número de cuenta");
+        return;
+    }
+    PreparedStatement ps = con.prepareStatement(
+        "INSERT INTO clientes (nombre, apellido, telefono, ciudad, ncuenta, saldo, estado) VALUES (?,?,?,?,?,?,0)");
+    ps.setString(1, (String) c.get("nombre"));
+    ps.setString(2, (String) c.get("apellido"));
+    ps.setString(3, (String) c.get("telefono"));
+    ps.setString(4, (String) c.get("ciudad"));
+    ps.setLong(5, (long) c.get("ncuenta"));
+    ps.setDouble(6, (double) c.get("saldo"));
+    ps.executeUpdate();
+    txtSalida.setText("Cliente agregado");
+      } catch (Exception e) {
+    txtSalida.setText("Error: " + e.getMessage());
+       }
+    }//GEN-LAST:event_btnAgregarActionPerformed
+
+    private void btnBuscarNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarNombreActionPerformed
+        try (Connection con = conectar()) {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM clientes WHERE nombre LIKE ?");
+    ps.setString(1, "%" + txtNombre.getText() + "%");
+    mostrarClientes(ps);
+     }  catch (Exception e) {
+    txtSalida.setText("Error: " + e.getMessage());
+       }
+    }//GEN-LAST:event_btnBuscarNombreActionPerformed
+
+    private void btnBuscarIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarIdActionPerformed
+        try (Connection con = conectar()) {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM clientes WHERE id = ?");
+    ps.setInt(1, Integer.parseInt(txtId.getText()));
+    mostrarClientes(ps);
+      } catch (Exception e) {
+    txtSalida.setText("Error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnBuscarIdActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        try (Connection con = conectar()) {
+    int id = Integer.parseInt(txtId.getText());
+    HashMap<String, Object> c = leerCliente();
+    if (!bloquear(con, "clientes", id)) {
+        txtSalida.setText("El cliente no existe o está ocupado");
+        return;
+    }
+    try {
+        PreparedStatement ps = con.prepareStatement(
+            "UPDATE clientes SET nombre=?, apellido=?, telefono=?, ciudad=?, ncuenta=?, saldo=? WHERE id=?");
+        ps.setString(1, (String) c.get("nombre"));
+        ps.setString(2, (String) c.get("apellido"));
+        ps.setString(3, (String) c.get("telefono"));
+        ps.setString(4, (String) c.get("ciudad"));
+        ps.setLong(5, (long) c.get("ncuenta"));
+        ps.setDouble(6, (double) c.get("saldo"));
+        ps.setInt(7, id);
+        ps.executeUpdate();
+        txtSalida.setText("Cliente editado");
+    } finally {
+        liberar(con, "clientes", id);
+    }
+      } catch (Exception e) {
+    txtSalida.setText("Error: " + e.getMessage());
+      }
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnCosignarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCosignarActionPerformed
+        cambiarSaldo(false);
+    }//GEN-LAST:event_btnCosignarActionPerformed
+
+    private void btnRetirarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRetirarActionPerformed
+      cambiarSaldo(true);
+    }//GEN-LAST:event_btnRetirarActionPerformed
+
+    private void btnListarCajerosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarCajerosActionPerformed
+        try (Connection con = conectar()) {
+    ResultSet rs = con.createStatement().executeQuery("SELECT * FROM cajeros");
+    String texto = "";
+    while (rs.next()) {
+        texto += "Cajero " + rs.getInt("id") + " | $10.000: " + rs.getInt("ndiez")
+               + " | $20.000: " + rs.getInt("nveinte") + " | $50.000: " + rs.getInt("ncincuenta")
+               + " | $100.000: " + rs.getInt("ncien") + " | Estado: " + rs.getInt("estado") + "\n";
+    }
+    txtSalida.setText(texto.isEmpty() ? "No hay cajeros" : texto);
+} catch (Exception e) {
+    txtSalida.setText("Error: " + e.getMessage());
+}
+    }//GEN-LAST:event_btnListarCajerosActionPerformed
+
+    private void btnAgregarCajeroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarCajeroActionPerformed
+       try (Connection con = conectar()) {
+    PreparedStatement ps = con.prepareStatement(
+        "INSERT INTO cajeros (ndiez, nveinte, ncincuenta, ncien, estado) VALUES (?,?,?,?,0)");
+    ps.setInt(1, Integer.parseInt(txtDiez.getText()));
+    ps.setInt(2, Integer.parseInt(txtVeinte.getText()));
+    ps.setInt(3, Integer.parseInt(txtCincuenta.getText()));
+    ps.setInt(4, Integer.parseInt(txtCien.getText()));
+    ps.executeUpdate();
+    txtSalida.setText("Cajero agregado");
+} catch (Exception e) {
+    txtSalida.setText("Error: " + e.getMessage());
+}
+    }//GEN-LAST:event_btnAgregarCajeroActionPerformed
+
+    private void btnEditarCajeroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarCajeroActionPerformed
+        modificarCajero("UPDATE cajeros SET ndiez=?, nveinte=?, ncincuenta=?, ncien=? WHERE id=?", false);
+    }//GEN-LAST:event_btnEditarCajeroActionPerformed
+
+    private void btnAgregarBilletesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarBilletesActionPerformed
+        modificarCajero("UPDATE cajeros SET ndiez=ndiez+?, nveinte=nveinte+?, ncincuenta=ncincuenta+?, ncien=ncien+? WHERE id=?", false);
+    }//GEN-LAST:event_btnAgregarBilletesActionPerformed
+
+    private void btnQuitarBilletesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarBilletesActionPerformed
+       modificarCajero("UPDATE cajeros SET ndiez=ndiez-?, nveinte=nveinte-?, ncincuenta=ncincuenta-?, ncien=ncien-? "
+    + "WHERE id=? AND ndiez>=? AND nveinte>=? AND ncincuenta>=? AND ncien>=?", true);
+    }//GEN-LAST:event_btnQuitarBilletesActionPerformed
+
+    private void btnEliminarCajeroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarCajeroActionPerformed
+        try (Connection con = conectar()) {
+    int id = Integer.parseInt(txtCajId.getText());
+    if (!bloquear(con, "cajeros", id)) {
+        txtSalida.setText("El cajero no existe o está ocupado");
+        return;
+    }
+    PreparedStatement ps = con.prepareStatement("DELETE FROM cajeros WHERE id = ?");
+    ps.setInt(1, id);
+    ps.executeUpdate();
+    txtSalida.setText("Cajero eliminado");
+} catch (Exception e) {
+    txtSalida.setText("Error: " + e.getMessage());
+}
+    }//GEN-LAST:event_btnEliminarCajeroActionPerformed
 
     /**
      * @param args the command line arguments
